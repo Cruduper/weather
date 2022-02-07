@@ -26,6 +26,12 @@ $(document).ready(function () {
       const fahrT = Math.round((((kelvinT - 273.15) * 9) / 5 + 32) * 100) / 100;
       $(".showHumidity").text(`The humidity in ${city} is ${response.main.humidity}%`);
       $(".showTemp").text(`The temperature in Kelvins is ${fahrT} degrees.`);
+
+      response.weather.forEach((elem) => {
+        const iconCode = elem.icon;
+        const iconUrl = "https://openweathermap.org/img/wn/" + iconCode + ".png";
+        $("ul.showWeather").append(`<li><img src=${iconUrl}> ${elem.main} : ${elem.description} </li>`);
+      });
     }
   });
 });
