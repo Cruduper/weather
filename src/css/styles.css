@@ -1,1 +1,45 @@
+#forecast,
+#forecast-box {
+  display: none;
+}
 
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+#forecast-table {
+  display: flex;
+}
+
+#forecast-table li {
+  width: 90px;
+  text-align: center;
+}
+
+#time li {
+  width: 50px;
+  height: 75px;
+  border-bottom: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#time {
+  padding-top: 25px;
+  border-left: 1px solid black;
+}
+
+#forecast-table ul {
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+}
+
+.brdr {
+  border-bottom: 1px solid black;
+}
+
+#forecast-box {
+  margin-top: 20px;
+}
