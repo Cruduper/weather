@@ -4,11 +4,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/styles.css";
 
 $(document).ready(function () {
+  let location = "";
+  let day;
   $("#weatherLocation").click(function () {
     const city = capitalize($("#city").val());
     const state = capitalize($("option:selected").val());
 
-    let location = "";
+    location = "";
     if (city !== "") {
       location = city;
       if (state !== "") {
@@ -66,9 +68,62 @@ $(document).ready(function () {
       const sunSetUnix = response.sys.sunset;
       const sunRiseDate = new Date(sunRiseUnix * 1000);
       const sunSetDate = new Date(sunSetUnix * 1000);
+      day = sunRiseDate.getDay();
 
       $(".sunrise").html("Sunrise time: " + getTime(sunRiseDate));
       $(".sunset").html("Sunset time: " + getTime(sunSetDate));
+
+      $("#forecast").show();
     }
+  });
+
+  $("#forecast").click(function () {
+    let request = new XMLHttpRequest();
+    const url = `http://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${process.env.API_KEY}`;
+
+    request.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        const response = JSON.parse(this.responseText);
+        getForecast(response);
+      }
+    };
+
+    request.open("GET", url, true);
+    request.send();
+
+    $("#forecast-table > ul:not(:first-child)").empty();
+
+    function getForecast(response) {
+      const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+      for (let i = 0; i < 8; i++) {
+        let dayNum = i + 1;
+        $("ul#day-" + dayNum).append(`<li class="brdr">${weekDays[day + i]}</li>`);
+      }
+      for (let i = 0; i < 40; i++) {
+        const kelvinT = response.list[i].main.temp;
+        const fahrT = Math.round((((kelvinT - 273.15) * 9) / 5 + 32) * 100) / 100;
+
+        const iconCode = response.list[i].weather[0].icon;
+        const iconUrl = "https://openweathermap.org/img/wn/" + iconCode + ".png";
+        if (i >= 0 && i < 8) {
+          $("ul#day-1").append(`<li><img src=${iconUrl}></li>`);
+          $("ul#day-1").append(`<li class="brdr">${fahrT}°</li>`);
+        } else if (i >= 8 && i < 16) {
+          $("ul#day-2").append(`<li><img src=${iconUrl}></li>`);
+          $("ul#day-2").append(`<li class="brdr">${fahrT}°</li>`);
+        } else if (i >= 16 && i < 24) {
+          $("ul#day-3").append(`<li><img src=${iconUrl}></li>`);
+          $("ul#day-3").append(`<li class="brdr">${fahrT}°</li>`);
+        } else if (i >= 24 && i < 32) {
+          $("ul#day-4").append(`<li><img src=${iconUrl}></li>`);
+          $("ul#day-4").append(`<li class="brdr">${fahrT}°</li>`);
+        } else if (i >= 32 && i < 40) {
+          $("ul#day-5").append(`<li><img src=${iconUrl}></li>`);
+          $("ul#day-5").append(`<li class="brdr">${fahrT}°</li>`);
+        }
+      }
+    }
+    $("#forecast-box").show();
   });
 });
