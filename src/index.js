@@ -21,18 +21,29 @@ $(document).ready(function () {
     }
     $("#city").val("");
 
-    let request = new XMLHttpRequest();
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${process.env.API_KEY}`;
+    let promise = new Promise( function(resolve, reject) {
+      let request = new XMLHttpRequest();
+      const url = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${process.env.API_KEY}`;
 
-    request.onreadystatechange = function () {
-      if (this.readyState === 4 && this.status === 200) {
-        const response = JSON.parse(this.responseText);
-        getElements(response);
-      }
-    };
+      request.onload = function () {
+        if (this.status === 200) {
+          resolve(request.response);
+        } else {
+          reject(request.response);
+        }
+      };
 
-    request.open("GET", url, true);
-    request.send();
+      request.open("GET", url, true);
+      request.send();
+    });
+
+    promise.then( function(response) {
+      const body = JSON.parse(response);
+      getElements(body);
+    }, function(error)  {
+      const info = JSON.parse(error);
+      $(".showErrors").text(`error: ${info.message}`);
+    });
 
     function capitalize(string) {
       let array = string.split(" ");
@@ -94,9 +105,9 @@ $(document).ready(function () {
     $("#forecast-table > ul:not(:first-child)").empty();
 
     function getForecast(response) {
-      const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday" ];
 
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 5; i++) {
         let dayNum = i + 1;
         $("ul#day-" + dayNum).append(`<li class="brdr">${weekDays[day + i]}</li>`);
       }
@@ -108,7 +119,7 @@ $(document).ready(function () {
 
 
       */
-      let n = 5;
+      let n;
       let today = new Date();
       let hour = today.getHours();
 
@@ -161,3 +172,39 @@ $(document).ready(function () {
     $("#forecast-box").show();
   });
 });
+
+
+/*** ALGORITHM for creating grid with nested loops, still using <ul> and <li> elements ***
+
+
+n = number of dummy blocks needed
+
+for (i = 0; i < 5; i++){
+  --create <ul>   //there will be one for each day since we're looping 5 times;
+  for (j = 0; j < 8; i++){
+    if (i = 0)  {
+      if (j < n){
+        --create dummy <li>;
+      }
+      else{
+        --create <li>  //when i=0 (aka the first day) there will be 8-n "real" <li>'s made
+      }
+    }
+    else  {
+      --create <li>  //when i != 0, there will be one <li> each 3 hour block, since were looping 8 times
+    }
+  }
+}
+
+could make numbers inside the loop condition (5, and 8) into variables, so you could change the 
+dimensions of the grid easily, i.e.:
+
+rowNum = 8;
+colNum = 5;
+
+then the first for loop would begin with:
+
+for (i = 0; i < colNum; i++), and the 2nd would begin with for (j=0; j < rowNum; j++)
+
+then just change the values of rowNum and colNum to change the grid dimensions
+*/
