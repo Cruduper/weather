@@ -54,7 +54,7 @@ $(document).ready(function () {
 
     function getElements(response) {
       const kelvinT = response.main.temp;
-      const fahrT = Math.round((((kelvinT - 273.15) * 9) / 5 + 32) * 100) / 100;
+      const fahrT = Math.round(((kelvinT - 273.15) * 9) / 5 + 32);
       $(".showHumidity").text(`The humidity in ${location} is ${response.main.humidity}%`);
       $(".showTemp").text(`The temperature in Fahrenheit is ${fahrT} degrees.`);
       $("ul.showWeather").empty();
@@ -100,25 +100,59 @@ $(document).ready(function () {
         let dayNum = i + 1;
         $("ul#day-" + dayNum).append(`<li class="brdr">${weekDays[day + i]}</li>`);
       }
+      /*
+      n =calcEmptyLis();
+
+      for ()
+        -creates n li elements at beginning of first day
+
+
+      */
+      let n = 5;
+      let today = new Date();
+      let hour = today.getHours();
+
+      if (hour >= 0 && hour < 3) {
+        n = 0;
+      } else if (hour >= 3 && hour < 6) {
+        n = 1;
+      } else if (hour >= 6 && hour < 9) {
+        n = 2;
+      } else if (hour >= 9 && hour < 12) {
+        n = 3;
+      } else if (hour >= 12 && hour < 15) {
+        n = 4;
+      } else if (hour >= 15 && hour < 18) {
+        n = 5;
+      } else if (hour >= 18 && hour < 21) {
+        n = 6;
+      } else if (hour >= 21 && hour < 24) {
+        n = 7;
+      }
+
+      for (let i = 0; i < n; i++) {
+        $("ul#day-1").append(`<li class="dummy"></li>`);
+      }
+
       for (let i = 0; i < 40; i++) {
         const kelvinT = response.list[i].main.temp;
-        const fahrT = Math.round((((kelvinT - 273.15) * 9) / 5 + 32) * 100) / 100;
+        const fahrT = Math.round(((kelvinT - 273.15) * 9) / 5 + 32);
 
         const iconCode = response.list[i].weather[0].icon;
         const iconUrl = "https://openweathermap.org/img/wn/" + iconCode + ".png";
-        if (i >= 0 && i < 8) {
+        if (i >= 0 && i < 8 - n) {
           $("ul#day-1").append(`<li><img src=${iconUrl}></li>`);
           $("ul#day-1").append(`<li class="brdr">${fahrT}°</li>`);
-        } else if (i >= 8 && i < 16) {
+        } else if (i >= 8 - n && i < 16 - n) {
           $("ul#day-2").append(`<li><img src=${iconUrl}></li>`);
           $("ul#day-2").append(`<li class="brdr">${fahrT}°</li>`);
-        } else if (i >= 16 && i < 24) {
+        } else if (i >= 16 - n && i < 24 - n) {
           $("ul#day-3").append(`<li><img src=${iconUrl}></li>`);
           $("ul#day-3").append(`<li class="brdr">${fahrT}°</li>`);
-        } else if (i >= 24 && i < 32) {
+        } else if (i >= 24 - n && i < 32 - n) {
           $("ul#day-4").append(`<li><img src=${iconUrl}></li>`);
           $("ul#day-4").append(`<li class="brdr">${fahrT}°</li>`);
-        } else if (i >= 32 && i < 40) {
+        } else if (i >= 32 - n && i < 40 - n) {
           $("ul#day-5").append(`<li><img src=${iconUrl}></li>`);
           $("ul#day-5").append(`<li class="brdr">${fahrT}°</li>`);
         }

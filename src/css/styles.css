@@ -17,7 +17,8 @@ ul {
   text-align: center;
 }
 
-#time li {
+#time li,
+.dummy {
   width: 50px;
   height: 75px;
   border-bottom: 1px solid black;
@@ -32,6 +33,7 @@ ul {
 }
 
 #forecast-table ul {
+  height: 625px;
   border-right: 1px solid black;
   border-top: 1px solid black;
 }
