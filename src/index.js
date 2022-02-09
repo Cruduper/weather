@@ -2,6 +2,8 @@ import $ from "jquery";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/styles.css";
+import WeatherService from "./js/weather-service.js";
+import ForecastService from "./js/forecast-service.js";
 
 $(document).ready(function () {
   let location = "";
@@ -21,22 +23,8 @@ $(document).ready(function () {
     }
     $("#city").val("");
 
-    let promise = new Promise( function(resolve, reject) {
-      let request = new XMLHttpRequest();
-      const url = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${process.env.API_KEY}`;
-
-      request.onload = function () {
-        if (this.status === 200) {
-          resolve(request.response);
-        } else {
-          reject(request.response);
-        }
-      };
-
-      request.open("GET", url, true);
-      request.send();
-    });
-
+    
+    let promise = WeatherService.getWeather(location);
     promise.then( function(response) {
       const body = JSON.parse(response);
       getElements(body);
@@ -89,18 +77,14 @@ $(document).ready(function () {
   });
 
   $("#forecast").click(function () {
-    let request = new XMLHttpRequest();
-    const url = `http://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${process.env.API_KEY}`;
-
-    request.onreadystatechange = function () {
-      if (this.readyState === 4 && this.status === 200) {
-        const response = JSON.parse(this.responseText);
-        getForecast(response);
-      }
-    };
-
-    request.open("GET", url, true);
-    request.send();
+    let promiseFore = ForecastService.forecastServ(location);
+    promiseFore.then ( function(response) {
+      const responseFore = JSON.parse(response);
+      getForecast(responseFore);
+    }, function(error) {
+      const errorFore= JSON.parse(error);
+      $(".showErrors").text(`error: ${errorFore.message}`);
+    });
 
     $("#forecast-table > ul:not(:first-child)").empty();
 
@@ -174,8 +158,21 @@ $(document).ready(function () {
 });
 
 
-/*** ALGORITHM for creating grid with nested loops, still using <ul> and <li> elements ***
+// let todayDate = new Date();
 
+// let newYear = parseInt(todayDate.getFullYear()) -10;
+
+// let oldDate = new Date( newYear, todayDate.getMonth(), todayDate.getDate() );
+
+// oldDate.now() 
+
+
+
+
+
+
+/*** ALGORITHM for creating grid with nested loops, still using <ul> and <li> elements ***
+     could also use a nested array of elements instead of <ul> and <li>
 
 n = number of dummy blocks needed
 
